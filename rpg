@@ -1,0 +1,98 @@
+import pygame
+import os
+from random import randrange
+
+pygame.init()
+
+largura = 1224
+altura = 620
+
+tela = pygame.display.set_mode((largura,altura))
+pygame.display.set_caption("hordas")
+
+num_inimigos = 10
+
+pos_y_player = largura // 2
+pos_x_player = altura // 2
+vel_jogador = 10
+vel_inimigo = 10
+
+diretorio_principal = os.path.dirname(__file__)
+diretorio_imagens = os.path.join(diretorio_principal, 'sprite')
+
+sprite_sheet_jogador = pygame.image.load(os.path.join(diretorio_imagens, 'Idle.png'))
+sprite_sheet_inimigos = pygame.image.load(os.path.join(diretorio_imagens, 'slime spritesheet calciumtrice.png'))
+imagen_fundo = pygame.image.load("C:/Users/POSITIVO/OneDrive/Área de Trabalho/pygame games/rpg/sprite/istockphoto-1334677974-612x612.jpg")
+imagen_fundo = pygame.transform.scale(imagen_fundo, (612*2, 310*2))
+
+class jogador(pygame.sprite.Sprite):
+    def __init__ (self):
+        pygame.sprite.Sprite.__init__(self)
+        self.imagens_jogador = []
+        for i in range(8):
+            img = sprite_sheet_jogador.subsurface((i * 128,0), (128,128))
+            self.imagens_jogador.append(img)
+        
+        self.index_lista = 0
+        self.image = self.imagens_jogador[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = (100,100)
+
+
+    def update(self):
+        if self.index_lista >= 7:
+            self.index_lista = 0
+        self.index_lista += 1
+        self.image = self.imagens_jogador[int(self.index_lista)]
+        
+class inimigos(pygame.sprite.Sprite):
+    def __init__ (self):
+        pygame.sprite.Sprite.__init__(self)
+        self.imagens_inimigos = []
+        for i in range(8):
+            img = sprite_sheet_inimigos.subsurface((i * 32,0), (32,32))
+            img = pygame.transform.scale(img, (32*3, 32*3))
+            self.imagens_inimigos.append(img)
+            
+        
+        self.index_lista = 0
+        self.image = self.imagens_inimigos[0]
+        self.rect = self.image.get_rect()
+        self.rect.y = randrange (20,600,100)
+        self.rect.x = randrange (20,1200,100)
+
+   
+
+
+todas_as_sprites = pygame.sprite.Group()
+Jogador = jogador()
+todas_as_sprites.add(Jogador)
+
+
+for i in range(num_inimigos):
+    novo_inimigo = inimigos()
+    todas_as_sprites.add(novo_inimigo)
+
+
+   
+loop = True
+
+fps = pygame.time.Clock()
+while loop:
+    
+    fps.tick(30)
+    for events in pygame.event.get():
+        if events.type == pygame.QUIT:
+            loop = False
+    
+
+
+    tela.blit(imagen_fundo,(0,0))
+    todas_as_sprites.draw(tela)
+    todas_as_sprites.update()
+
+
+
+    pygame.display.update()
+
+
